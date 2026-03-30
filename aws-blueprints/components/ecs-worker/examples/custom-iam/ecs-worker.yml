@@ -1,0 +1,48 @@
+# Exemplo: Permissões IAM customizadas para acesso a KMS
+#
+# extra_iam_statements adiciona uma policy KMS que não tem suporte nativo no módulo.
+# Use esta variável apenas para permissões sem variável dedicada. Para os casos
+# cobertos (SQS, SNS, DynamoDB, S3, Lambda), prefira as variáveis estruturadas.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  cpu: 256
+  memory: 512
+  image: alpine:latest
+
+  autoscaling_min: 1
+  autoscaling_max: 5
+  autoscale_strategy:
+    - sqs_messages_scaling
+
+  # Fila usada para autoscaling baseado em mensagens
+  sqs_specific_name: processing-queue
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:processing-queue
+    - arn:aws:sqs:us-east-1:123456789012:another-queue
+    - arn:aws:sqs:us-east-1:123456789012:a-third-queue
+
+  # IAM adicional: acesso a KMS para descriptografia
+  extra_iam_statements:
+    - sid: AllowKMSDecrypt
+      effect: Allow
+      actions:
+        - "kms:Decrypt"
+        - "kms:DescribeKey"
+      resources:
+        - arn:aws:kms:us-east-1:123456789012:key/my-key-id
+
+  secrets:
+    ENCRYPTED_KEY: arn:aws:ssm:us-east-1:123456789012:parameter/encrypted-key
+
+  log_retention_days: 7

@@ -1,0 +1,20 @@
+---
+# Exemplo: Fila FIFO (First In, First Out)
+#
+# Fila FIFO garante ordenação de entrega e deduplicação de mensagens.
+# Indicada para fluxos que exigem processamento sequencial e exactly-once.
+#
+# Nota: o sufixo ".fifo" é adicionado automaticamente ao nome da fila.
+# Para receber mensagens de um tópico SNS, o tópico também deve ser FIFO.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  # Habilita o modo FIFO; o sufixo ".fifo" é adicionado automaticamente
+  fifo_queue: true
+  # Tópico SNS FIFO autorizado a publicar mensagens nesta fila
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic.fifo

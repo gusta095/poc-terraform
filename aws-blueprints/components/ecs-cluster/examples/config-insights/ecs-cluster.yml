@@ -1,0 +1,12 @@
+---
+apiVersion: aws/v1
+kind: ecs-cluster
+version: "CHANGEME"
+
+spec:
+  cluster_name: example-cluster
+
+  # Container insights já está habilitado por padrão.
+  # Use enhanced_observability = true para ativar o modo avançado com métricas e logs detalhados por tarefa/serviço.
+  # Atenção: gera custo adicional no CloudWatch.
+  enhanced_observability: true

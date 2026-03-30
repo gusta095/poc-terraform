@@ -1,0 +1,25 @@
+---
+# Exemplo: Fila SQS com configurações avançadas
+#
+# Demonstra os principais parâmetros de configuração da fila:
+# tempo de visibilidade, retenção de mensagens, tamanho máximo,
+# delay de entrega e long polling.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  # Tempo (segundos) que a mensagem fica invisível após ser recebida (padrão: 30)
+  visibility_timeout_seconds: 120
+  # Retenção de mensagens: 7 dias (padrão: 4 dias / 345600s)
+  message_retention_seconds: 604800
+  # Tamanho máximo de mensagem: 64 KB (padrão: 256 KB / 262144 bytes)
+  max_message_size: 65536
+  # Delay antes da entrega: 10 segundos (padrão: 0)
+  delay_seconds: 10
+  # Long polling: aguarda até 10 segundos por mensagens (padrão: 0)
+  receive_wait_time_seconds: 10
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic

@@ -1,0 +1,20 @@
+---
+apiVersion: aws/v1
+kind: iam-role
+version: 26.03.22
+
+metadata:
+  owner: gustalab
+  environment: dev
+
+spec:
+  name: github-iam-role
+  description: Role assumida pelo GitHub Actions para deploy na AWS
+
+  enable_github_oidc: true
+
+  oidc_wildcard_subjects:
+    - repo:gusta-lab/*
+
+  policy_arns:
+    - arn:aws:iam::aws:policy/AdministratorAccess

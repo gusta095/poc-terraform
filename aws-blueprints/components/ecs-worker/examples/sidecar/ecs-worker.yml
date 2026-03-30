@@ -1,0 +1,34 @@
+# Exemplo: Container sidecar mínimo
+#
+# Container auxiliar adicionado à task definition com configuração mínima obrigatória.
+# Use sidecars para observabilidade, proxies ou agentes que precisam rodar
+# no mesmo contexto de rede do container principal.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  image: example/worker:latest
+  cpu: 512
+  memory: 1024
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:example-queue
+
+  environments:
+    APP_ENV: production
+
+  secrets:
+    DB_PASSWORD: arn:aws:ssm:us-east-1:123456789012:parameter/worker/db-password
+
+  sidecars:
+    # Unico sidcar com o minimo necessario
+    monitor:
+      image: example/monitor:latest

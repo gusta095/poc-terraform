@@ -1,0 +1,78 @@
+---
+# Exemplo: Mostrando os diferentes tipos de access_entries para controle de acesso ao cluster EKS.
+#
+# O root da conta já tem acesso de emergência automaticamente (injetado pelo blueprint).
+# Use access_entries para conceder acesso a roles de times, CI/CD e usuários específicos.
+# As policies disponíveis, da mais restrita à mais permissiva:
+#   AmazonEKSViewPolicy → AmazonEKSEditPolicy → AmazonEKSAdminPolicy → AmazonEKSClusterAdminPolicy
+
+apiVersion: aws/v1
+kind: eks
+version: "CHANGEME"
+
+spec:
+  name: eks-prod
+  eks_version: "1.35"
+
+  vpc_id: vpc-CHANGEME
+  subnet_ids:
+    - subnet-CHANGEME
+    - subnet-CHANGEME
+
+  # Tipos de logs do cluster para monitoramento e auditoria
+  enabled_log_types:
+    - audit
+    - api
+    - authenticator
+
+  creator_admin: true
+
+  endpoint_public_access: true
+  endpoint_public_access_cidrs:
+    - 0.0.0.0/0  # restrinja ao seu IP: 189.x.x.x/32
+
+  managed_node_groups:
+    bootstrap:
+      instance_types:
+        - t3.medium
+      min_size: 1
+      max_size: 2
+      labels:
+        role: bootstrap
+
+  # Acesso via roles — nenhum hardcode de usuário
+  access_entries:
+    platform-team:
+      principal_arn: arn:aws:iam::ACCOUNT_ID:role/platform-team
+      policy_associations:
+        admin:
+          policy_arn: arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy  # Administrador do Cluster
+          access_scope:
+            type: cluster
+
+    sre-team:
+      principal_arn: arn:aws:iam::ACCOUNT_ID:role/sre-team
+      policy_associations:
+        admin:
+          policy_arn: arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy  # Administrador sem gerenciar o cluster
+          access_scope:
+            type: cluster
+
+    github-actions:
+      principal_arn: arn:aws:iam::ACCOUNT_ID:role/github-actions
+      policy_associations:
+        edit:
+          policy_arn: arn:aws:eks::aws:cluster-access-policy/AmazonEKSEditPolicy  # Permissões de edição
+          access_scope:
+            type: cluster
+
+    backend-team:
+      principal_arn: arn:aws:iam::ACCOUNT_ID:role/backend-team
+      policy_associations:
+        edit:
+          policy_arn: arn:aws:eks::aws:cluster-access-policy/AmazonEKSViewPolicy  # Permissões de visualização
+          access_scope:
+            type: namespace
+            namespaces:
+              - production
+              - staging

@@ -1,0 +1,19 @@
+---
+# Exemplo: Fila SQS simples com acesso SNS
+#
+# Cria uma fila SQS padrão com permissão para que um tópico SNS envie
+# mensagens. Essa é a configuração mínima recomendada para filas com
+# produtor SNS.
+#
+# Nota: as variáveis obrigatórias `environment`, `account_id` e `aws_region`
+# não aparecem no spec — elas são injetadas automaticamente pelo Terragrunt
+# a partir do contexto da conta e da região em `aws-config-live`.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic

@@ -1,0 +1,23 @@
+---
+# Exemplo: Fila SQS com KMS e DLQ usando chaves separadas
+#
+# Permite usar chaves KMS distintas para a fila principal e a DLQ.
+# Útil quando as políticas de acesso às chaves precisam ser diferentes
+# entre os dois recursos — por exemplo, a DLQ acessível apenas pelo time
+# de on-call e a fila principal pelo serviço de produção.
+#
+# Se dlq_kms_master_key_id for omitido, a DLQ herda kms_master_key_id.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  create_dlq: true
+  # Chave KMS da fila principal
+  kms_master_key_id: arn:aws:kms:us-east-1:123456789012:key/mrk-fila
+  # Chave KMS exclusiva da DLQ
+  dlq_kms_master_key_id: arn:aws:kms:us-east-1:123456789012:key/mrk-dlq
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic

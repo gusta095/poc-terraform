@@ -1,0 +1,17 @@
+---
+# Exemplo: Fila SQS com acesso para notificações do S3
+#
+# Permite que buckets S3 publiquem notificações de eventos diretamente
+# na fila. Útil para pipelines de processamento de objetos, como
+# ingestão de arquivos, ETL ou triggers de Lambda via S3 event.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  # Buckets S3 autorizados a enviar notificações de eventos para esta fila
+  s3_access_names:
+    - example-data-bucket
+    - example-uploads-bucket

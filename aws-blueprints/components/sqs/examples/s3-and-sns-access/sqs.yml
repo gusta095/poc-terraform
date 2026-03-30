@@ -1,0 +1,21 @@
+---
+# Exemplo: Fila SQS com acesso para S3 e SNS simultaneamente
+#
+# Padrão comum em pipelines de ingestão: o S3 publica notificações de
+# eventos diretamente na fila e um tópico SNS fan-out também entrega
+# mensagens. A policy gerada concatena os statements de ambos os
+# produtores — nenhuma configuração extra é necessária.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-ingest-sqs
+  # Buckets S3 autorizados a enviar notificações de eventos para esta fila
+  s3_access_names:
+    - example-raw-bucket
+    - example-uploads-bucket
+  # Tópico SNS fan-out autorizado a entregar mensagens para esta fila
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-events-topic

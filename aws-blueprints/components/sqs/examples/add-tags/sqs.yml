@@ -1,0 +1,20 @@
+---
+# Exemplo: Fila SQS com tags customizadas
+#
+# Demonstra como adicionar tags específicas do projeto aos recursos.
+# Tags em spec.tags têm precedência sobre metadata e são mescladas com
+# as tags padrão do módulo.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  # Incluído para tornar o exemplo funcional; o foco deste exemplo é spec.tags
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic
+  tags:
+    service-name: example-sqs
+    owner: platform-team
+    cost-center: a1234

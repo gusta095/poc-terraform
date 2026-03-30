@@ -1,0 +1,11 @@
+---
+apiVersion: aws/v1
+kind: iam-provider
+version: 26.03.22
+
+metadata:
+  owner: gustalab
+  environment: dev
+
+spec:
+  url: https://token.actions.githubusercontent.com

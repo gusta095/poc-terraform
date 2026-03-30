@@ -1,0 +1,32 @@
+---
+# Exemplo: Fila SQS com statements IAM adicionais
+#
+# Neste exemplo, um statement de Deny restringe o acesso fora de
+# um VPC Endpoint, garantindo que mensagens só trafeguem via rede privada.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  # Acesso SNS padrão para publicação de mensagens
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic
+
+  # extra_iam_statements aceita uma lista de statements IAM que são
+  # mesclados diretamente na policy da fila. Use quando sns_access_arns
+  # e s3_access_names não cobrem o caso — por exemplo, para Deny
+  # condicional, restrição por VPC Endpoint ou acesso cross-account.
+  extra_iam_statements:
+    - sid: DenyPublicAccess
+      effect: Deny
+      actions:
+        - "sqs:*"
+      resources:
+        - "*"
+      condition:
+        - test: StringNotEquals
+          variable: aws:sourceVpce
+          values:
+            - vpce-0a1b2c3d4e5f67890  # ID do VPC Endpoint da conta

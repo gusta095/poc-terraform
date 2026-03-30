@@ -1,0 +1,31 @@
+# Exemplo: Autoscaling baseado em mensagens SQS
+#
+# O número de tasks escala conforme o volume de mensagens na fila.
+# Quando sqs_access_arns tem apenas uma entrada, ela é usada automaticamente
+# como métrica de escala. Para múltiplas filas, use sqs_specific_name para
+# indicar qual fila deve ser monitorada.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  image: example/worker:latest
+  cpu: 256
+  memory: 512
+
+  autoscaling_min: 1
+  autoscaling_max: 5
+
+  # Autoscaling baseado em mensagens do SQS
+  autoscale_strategy:
+    - sqs_messages_scaling
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:example-queue

@@ -1,0 +1,8 @@
+---
+apiVersion: aws/v1
+kind: route53
+version: 26.03.27
+
+spec:
+  name: gustalab.xyz
+  comment: Zona usada para teste e estudos

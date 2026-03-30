@@ -1,0 +1,7 @@
+---
+apiVersion: aws/v1
+kind: ecs-cluster
+version: "CHANGEME"
+
+spec:
+  cluster_name: example-cluster

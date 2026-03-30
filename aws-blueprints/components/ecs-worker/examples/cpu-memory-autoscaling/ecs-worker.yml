@@ -1,0 +1,32 @@
+# Exemplo: Autoscaling por CPU e memória para workloads intensivos
+#
+# O worker escala automaticamente com base na utilização de CPU e memória.
+# Use para processos de transformação de dados ou renderização onde o consumo
+# de recurso é o sinal mais confiável de carga.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  cpu: 1024
+  memory: 2048
+  image: busybox:latest
+
+  autoscaling_min: 2
+  autoscaling_max: 5
+  autoscale_strategy:
+    - cpu
+    - memory
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:processing-queue
+
+  environments:
+    WORKER_TYPE: cpu-intensive

@@ -1,0 +1,16 @@
+---
+# Exemplo: Fila SQS com Dead Letter Queue (DLQ)
+#
+# Habilita a criação de uma DLQ vinculada à fila principal.
+# Mensagens que excedem o número máximo de tentativas de entrega
+# são movidas automaticamente para a DLQ.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  create_dlq: true
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic

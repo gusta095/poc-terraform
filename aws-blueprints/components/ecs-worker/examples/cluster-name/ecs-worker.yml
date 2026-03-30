@@ -1,0 +1,27 @@
+# Exemplo: Worker conectado a um cluster criado neste mesmo stack
+#
+# Use este padrão quando o cluster ECS é criado junto com o worker.
+# O campo `cluster_arn` é preenchido automaticamente durante a execução
+# não é necessário informar o nome do cluster manualmente.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: 26.03.23
+
+spec:
+  cluster_name: ecs-cluster-exemple
+  worker_name: example-worker
+
+  image: gusta095/ecs-worker:latest
+  cpu: 256
+  memory: 512
+
+  autoscaling_min: 1
+  autoscaling_max: 2
+  autoscale_strategy:
+    - cpu
+
+  sidecars:
+    monitor:
+      image: gusta095/ecs-worker:latest

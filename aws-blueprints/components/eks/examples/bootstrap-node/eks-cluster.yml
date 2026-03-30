@@ -1,0 +1,43 @@
+---
+# Exemplo: cluster com node group de bootstrap para ArgoCD
+#
+# Um único nó on-demand pequeno para rodar o ArgoCD de forma estável.
+# A partir do ArgoCD, instale Karpenter para gerenciar os demais nodes.
+# Após o Karpenter estar operacional, este node group pode ser removido.
+#
+# Taints garantem que apenas pods tolerantes (ArgoCD) sejam agendados aqui.
+
+apiVersion: aws/v1
+kind: eks
+version: "CHANGEME"
+
+spec:
+  name: eks-prod
+  eks_version: "1.35"
+
+  vpc_id: vpc-CHANGEME
+  subnet_ids:
+    - subnet-CHANGEME
+    - subnet-CHANGEME
+
+  creator_admin: true
+
+  endpoint_public_access: true
+  endpoint_public_access_cidrs:
+    - 0.0.0.0/0  # restrinja ao seu IP: 189.x.x.x/32
+
+  managed_node_groups:
+    bootstrap:
+      instance_types:
+        - t3.medium
+      capacity_type: ON_DEMAND
+      min_size: 1
+      max_size: 2
+      desired_size: 1
+      labels:
+        role: bootstrap
+      taints:
+        bootstrap-only:
+          key: role
+          value: bootstrap
+          effect: NO_SCHEDULE

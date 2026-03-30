@@ -1,0 +1,25 @@
+---
+# Exemplo: Fila FIFO com alto throughput por message group
+#
+# Por padrão, filas FIFO têm throughput limitado a 3.000 TPS por fila
+# (perQueue). Ao mudar para perMessageGroupId, o limite passa a ser
+# 3.000 TPS por message group ID — permitindo escalar horizontalmente
+# usando grupos distintos para diferentes partições de dados.
+#
+# content_based_deduplication elimina a necessidade de gerar um
+# MessageDeduplicationId em cada mensagem: o SQS usa o hash SHA-256
+# do corpo da mensagem como ID de deduplicação automaticamente.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  fifo_queue: true
+  # Escala o throughput por message group em vez de por fila
+  fifo_throughput_limit: perMessageGroupId
+  # Deduplicação automática pelo conteúdo — sem necessidade de gerar IDs
+  content_based_deduplication: true
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic.fifo

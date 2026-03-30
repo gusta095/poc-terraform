@@ -1,0 +1,62 @@
+# Exemplo: Múltiplos sidecars — agente de observabilidade, proxy e monitor
+#
+# A task roda três containers auxiliares além do principal. Todos usam
+# essential: false — a task continua rodando mesmo se um sidecar falhar,
+# comportamento correto para agentes opcionais como Datadog e proxies.
+# O cpu e memory da task devem cobrir todos os containers somados.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  image: example/worker:latest
+  cpu: 512
+  memory: 1024
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:example-queue
+
+  environments:
+    APP_ENV: production
+
+  secrets:
+    DB_PASSWORD: arn:aws:ssm:us-east-1:123456789012:parameter/worker/db-password
+
+  sidecars:
+    # Agente de observabilidade — essential: false garante que a task não caia se o agente falhar
+    datadog-agent:
+      image: datadog/agent:7
+      essential: false
+      cpu: 256
+      memory: 512
+      environments:
+        DD_APM_ENABLED: "true"
+        DD_LOGS_ENABLED: "true"
+        DD_CONTAINER_EXCLUDE_LOGS: name:datadog-agent
+      secrets:
+        DD_API_KEY: arn:aws:ssm:us-east-1:123456789012:parameter/datadog/api-key
+
+    # Proxy de saída com health check customizado
+    envoy:
+      image: envoyproxy/envoy:v1.29-latest
+      essential: false
+      environments:
+        ENVOY_LOG_LEVEL: warning
+      health_check:
+        command:
+          - CMD-SHELL
+          - curl -sf http://localhost:9901/ready || exit 1
+        interval: 30
+        timeout: 5
+        retries: 3
+        start_period: 20
+
+    monitor:
+      image: example/monitor:latest

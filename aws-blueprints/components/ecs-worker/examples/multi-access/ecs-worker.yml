@@ -1,0 +1,51 @@
+# Exemplo: Worker com acesso a múltiplos serviços AWS
+#
+# O worker tem permissões para SQS, SNS, DynamoDB, S3 e Lambda.
+# O circuit breaker de deploy está desabilitado — útil em ambientes de
+# desenvolvimento onde rollback automático interromperia ciclos rápidos de iteração.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  cpu: 512
+  memory: 1024
+  image: python:3.9-slim
+
+  autoscaling_min: 1
+  autoscaling_max: 10
+  autoscale_strategy:
+    - cpu
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:my-queue
+
+  sns_access:
+    - arn:aws:sns:us-east-1:123456789012:my-topic
+
+  dynamodb_access:
+    - arn:aws:dynamodb:us-east-1:123456789012:table/my-table
+
+  s3_access_names:
+    - my-bucket
+
+  lambda_access:
+    - arn:aws:lambda:us-east-1:123456789012:function:my-function
+
+  environments:
+    LOG_LEVEL: debug
+    REGION: us-east-1
+
+  secrets:
+    API_KEY: arn:aws:ssm:us-east-1:123456789012:parameter/api-key
+
+  deployment_circuit_breaker:
+    enable: false
+    rollback: false

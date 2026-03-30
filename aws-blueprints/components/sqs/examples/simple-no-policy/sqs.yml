@@ -1,0 +1,14 @@
+---
+# Exemplo: Fila SQS sem policy de acesso
+#
+# Cria uma fila SQS padrão sem policy de recurso anexada. Use esse padrão
+# quando os consumidores acessam a fila via IAM role própria — a permissão
+# é concedida na role do consumidor, não na policy da fila.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  create_queue_policy: false

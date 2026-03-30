@@ -1,0 +1,24 @@
+---
+# Exemplo: DLQ com configurações avançadas
+#
+# Demonstra como customizar os parâmetros da Dead Letter Queue (DLQ).
+# Útil quando a DLQ precisa de configurações de retenção ou visibilidade
+# diferentes da fila principal.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  create_dlq: true
+  # Tempo de visibilidade da DLQ: 60 segundos (padrão: 30)
+  dlq_visibility_timeout_seconds: 60
+  # Retenção máxima na DLQ: 14 dias — máximo permitido (padrão: 4 dias)
+  dlq_message_retention_seconds: 1209600
+  # Sem delay na DLQ para processamento imediato (padrão: 0)
+  dlq_delay_seconds: 0
+  # Sem long polling na DLQ (padrão: 0)
+  dlq_receive_wait_time_seconds: 0
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic

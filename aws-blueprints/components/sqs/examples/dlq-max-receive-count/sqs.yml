@@ -1,0 +1,22 @@
+---
+# Exemplo: DLQ com número de tentativas customizado
+#
+# Controla quantas vezes uma mensagem pode ser recebida sem confirmação
+# antes de ser movida para a DLQ. O padrão do módulo é 5.
+#
+# Valores menores (ex: 1-3): adequados para processamento idempotente onde
+# uma única falha já indica problema no consumidor.
+# Valores maiores (ex: 10+): adequados para falhas transitórias onde
+# múltiplas tentativas são esperadas antes de desistir.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  create_dlq: true
+  # Mover para DLQ após 3 tentativas sem confirmação
+  max_receive_count: 3
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic

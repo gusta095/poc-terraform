@@ -1,0 +1,12 @@
+---
+apiVersion: aws/v1
+kind: acm
+version: 26.03.29
+
+dependency:
+  - zone: gustalab-xyz
+
+spec:
+  domain_name: "*.gustalab.xyz"
+  subject_alternative_names:
+    - "gustalab.xyz"

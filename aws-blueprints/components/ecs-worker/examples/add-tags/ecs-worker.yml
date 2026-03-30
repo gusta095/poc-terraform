@@ -1,0 +1,31 @@
+# Exemplo: Tags customizadas para rastreamento de custo e ownership
+#
+# Tags adicionais são injetadas via spec.tags para atribuição de centro de custo.
+# metadata.owner é propagado pelo Terragrunt como tag de ownership; spec.tags
+# complementa com tags específicas desta instância.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  image: example/worker:latest
+  cpu: 256
+  memory: 512
+
+  autoscaling_min: 1
+  autoscaling_max: 3
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:example-queue
+
+  tags:
+    service-name: example-worker
+    owner: platform-team
+    cost-center: a1234

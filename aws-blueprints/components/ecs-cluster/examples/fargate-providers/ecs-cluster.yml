@@ -1,0 +1,22 @@
+---
+apiVersion: aws/v1
+kind: ecs-cluster
+version: "CHANGEME"
+
+spec:
+  cluster_name: example-cluster
+
+  # FARGATE e FARGATE_SPOT precisam estar listados para que a estratégia abaixo funcione
+  cluster_capacity_providers:
+    - FARGATE
+    - FARGATE_SPOT
+
+  # As 2 primeiras tasks sempre alocadas no FARGATE.
+  # Após isso: para cada 3 tasks no FARGATE, 1 vai ao FARGATE_SPOT.
+  # Equilibra disponibilidade e custo.
+  default_capacity_provider_strategy:
+    FARGATE:
+      base: 2
+      weight: 3
+    FARGATE_SPOT:
+      weight: 1

@@ -1,0 +1,29 @@
+---
+apiVersion: aws/v1
+kind: eks
+version: "CHANGEME"
+
+spec:
+  name: eks-exemplo
+  eks_version: "1.34"
+
+  vpc_id: vpc-0f1c78c87db36sb8
+  subnet_ids:
+    - subnet-0fe686cf6fc66sdef
+    - subnet-010c553ad4dsfsdqw
+    - subnet-0a4e5asdsfdsfdsff
+
+  endpoint_public_access: true
+  endpoint_public_access_cidrs:
+    - 175.87.45.4/32
+
+  creator_admin: true
+
+  managed_node_groups:
+    bootstrap:
+      instance_types:
+        - t3.medium
+      min_size: 1
+      max_size: 2
+      labels:
+        role: bootstrap

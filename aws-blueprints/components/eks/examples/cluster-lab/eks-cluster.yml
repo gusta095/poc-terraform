@@ -1,0 +1,36 @@
+---
+# Exemplo: cluster de laboratório sem NAT Gateway
+#
+# Indicado para contas de teste com apenas subnets públicas.
+# endpoint_public_access = true permite acesso via kubectl direto da máquina.
+# Restrinja endpoint_public_access_cidrs ao seu IP para evitar exposição desnecessária.
+#
+# Para produção: endpoint_public_access = false, nodes em subnet privada com NAT Gateway.
+
+apiVersion: aws/v1
+kind: eks
+version: "CHANGEME"
+
+spec:
+  name: eks-lab
+  eks_version: "1.35"
+
+  vpc_id: vpc-CHANGEME
+  subnet_ids:
+    - subnet-CHANGEME
+    - subnet-CHANGEME
+
+  endpoint_public_access: true
+  endpoint_public_access_cidrs:
+    - 0.0.0.0/0  # restrinja ao seu IP: 189.x.x.x/32
+
+  creator_admin: true
+
+  managed_node_groups:
+    bootstrap:
+      instance_types:
+        - t3.medium
+      min_size: 1
+      max_size: 2
+      labels:
+        role: bootstrap

@@ -1,0 +1,31 @@
+# Exemplo: Worker que publica em SNS e consome de SQS
+#
+# O worker tem permissão de publicar mensagens em um tópico SNS e de consumir
+# mensagens de uma fila SQS. Use este padrão quando o worker precisa tanto
+# processar mensagens quanto notificar outros sistemas sobre eventos.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: sns-processor-worker
+
+  cpu: 256
+  memory: 512
+  image: python:3.9-slim
+
+  autoscaling_min: 1
+  autoscaling_max: 3
+  autoscale_strategy:
+    - cpu
+
+  sns_access:
+    - arn:aws:sns:us-east-1:123456789012:notification-topic
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:dlq-queue

@@ -1,0 +1,4 @@
+shellcheck 0.9.0
+terraform-docs 0.21.0
+terraform 1.14.5
+tflint 0.55.1

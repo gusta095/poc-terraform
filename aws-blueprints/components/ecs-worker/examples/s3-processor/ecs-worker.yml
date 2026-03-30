@@ -1,0 +1,44 @@
+# Exemplo: Worker que processa mensagens SQS e grava resultados no S3
+#
+# O worker lê mensagens de uma fila SQS e persiste os dados processados em S3.
+# As variáveis de ambiente QUEUE_URL e S3_BUCKET informam ao container onde ler
+# e gravar. sqs_access_arns e s3_access_names concedem as permissões IAM correspondentes.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  cpu: 256
+  memory: 512
+  image: python:3.9-slim
+
+  autoscaling_min: 1
+  autoscaling_max: 2
+  autoscale_strategy:
+    - cpu
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:example-queue
+
+  s3_access_names:
+    - example-bucket
+
+  environments:
+    QUEUE_URL: https://sqs.us-east-1.amazonaws.com/123456789012/example-queue
+    BATCH_LOOPS: "1"
+    PARALLEL_WORKERS: "1"
+    S3_BUCKET: example-bucket
+    S3_PREFIX: consumer-output
+    MAX_BUFFER_MESSAGES: "1000"
+    MAX_BUFFER_SECONDS: "30"
+
+  sidecars:
+    monitor:
+      image: example/monitor:latest

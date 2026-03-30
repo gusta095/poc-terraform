@@ -1,0 +1,21 @@
+---
+# Exemplo: Fila FIFO com Dead Letter Queue (DLQ)
+#
+# Combina ordenação FIFO com captura de mensagens com falha via DLQ.
+# A DLQ criada também será do tipo FIFO automaticamente.
+#
+# Nota: o sufixo ".fifo" é adicionado automaticamente ao nome da fila.
+
+apiVersion: aws/v1
+kind: sqs
+version: "CHANGEME"
+
+spec:
+  name: example-sqs
+  # Habilita o modo FIFO; o sufixo ".fifo" é adicionado automaticamente
+  fifo_queue: true
+  # Habilita a DLQ — também será criada como FIFO automaticamente
+  create_dlq: true
+  # Tópico SNS FIFO autorizado a publicar mensagens nesta fila
+  sns_access_arns:
+    - arn:aws:sns:us-east-1:123456789012:example-sns-topic.fifo

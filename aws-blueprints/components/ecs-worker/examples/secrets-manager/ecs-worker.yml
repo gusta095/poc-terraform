@@ -1,0 +1,40 @@
+# Exemplo: Injeção de secrets via SSM e Secrets Manager
+#
+# O container recebe credenciais injetadas como variáveis de ambiente.
+# SSM Parameter Store é ideal para configurações simples sem rotação automática.
+# Secrets Manager é preferível para credenciais com rotação, como senhas de banco.
+# O módulo concede permissão de leitura automaticamente para todos os ARNs declarados.
+#
+---
+apiVersion: aws/v1
+kind: ecs-worker
+version: "CHANGEME"
+
+dependency:
+  - cluster: ../ecs-cluster-exemple
+
+spec:
+  worker_name: example-worker
+
+  cpu: 256
+  memory: 512
+  image: python:3.9-slim
+
+  autoscaling_min: 1
+  autoscaling_max: 5
+  autoscale_strategy:
+    - sqs_messages_scaling
+
+  sqs_access_arns:
+    - arn:aws:sqs:us-east-1:123456789012:orders-queue
+
+  environments:
+    DB_HOST: prod-db.cluster.us-east-1.rds.amazonaws.com
+    DB_NAME: orders
+
+  secrets:
+    APP_CONFIG: arn:aws:ssm:us-east-1:123456789012:parameter/prod/app/config
+    DB_PASSWORD: arn:aws:secretsmanager:us-east-1:123456789012:secret:prod/db/password
+    API_KEY: arn:aws:secretsmanager:us-east-1:123456789012:secret:prod/api/key
+
+  log_retention_days: 30
